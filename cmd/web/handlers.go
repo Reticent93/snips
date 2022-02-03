@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Reticent93/snips/pkg/models"
-	"html/template"
+	//"html/template"
 	"net/http"
 	"strconv"
 )
@@ -21,27 +21,31 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &templateData{Snips: s}
-
-	files := []string{
-		"./ui/html/home.page.tmpl",
-		"./ui/html/base.layout.tmpl",
-		"./ui/html/footer.partial.tmpl",
+	for _, snip := range s {
+		fmt.Fprintf(w, "%v", snip)
 	}
+
+	//data := &templateData{Snips: s}
+	//
+	//files := []string{
+	//	"./ui/html/home.page.tmpl",
+	//	"./ui/html/base.layout.tmpl",
+	//	"./ui/html/footer.partial.tmpl",
+	//}
 
 	//Parsing the html templates
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		http.Error(w, "Internal Server Error", 500)
-		return
-	}
+	//ts, err := template.ParseFiles(files...)
+	//if err != nil {
+	//	app.serverError(w, err)
+	//	http.Error(w, "Internal Server Error", 500)
+	//	return
+	//}
 
 	//Execute method writes content as the response body
-	err = ts.Execute(w, data)
-	if err != nil {
-		app.serverError(w, err)
-	}
+	//err = ts.Execute(w, data)
+	//if err != nil {
+	//	app.serverError(w, err)
+	//}
 }
 
 func (app *application) showSnip(w http.ResponseWriter, r *http.Request) {
@@ -60,25 +64,26 @@ func (app *application) showSnip(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	fmt.Fprintf(w, "%v", s)
 
-	data := &templateData{Snip: s}
+	//data := &templateData{Snip: s}
 
-	files := []string{
-		"./ui/html/show.page.tmpl",
-		"./ui/html/base.layout.tmpl",
-		"./ui/html/footer.partial.tmpl",
-	}
+	//files := []string{
+	//	"./ui/html/show.page.tmpl",
+	//	"./ui/html/base.layout.tmpl",
+	//	"./ui/html/footer.partial.tmpl",
+	//}
 	// Parse the template files...
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
+	//ts, err := template.ParseFiles(files...)
+	//if err != nil {
+	//	app.serverError(w, err)
+	//	return
+	//}
 
-	err = ts.Execute(w, data)
-	if err != nil {
-		app.serverError(w, err)
-	}
+	//err = ts.Execute(w, data)
+	//if err != nil {
+	//	app.serverError(w, err)
+	//}
 
 }
 

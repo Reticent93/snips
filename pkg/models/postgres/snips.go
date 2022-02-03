@@ -26,11 +26,11 @@ VALUES(?, ?, CURRENT_TIMESTAMP, CURRENT_DATE + INTERVAL ? DAY) RETURNING id`
 }
 
 func (m *SnipModel) Get(id int) (*models.Snip, error) {
-
+	s := &models.Snip{}
 	stmnt := `SELECT id, title, content, created, expires FROM snippet
-			WHERE expires > current_date + interval AND id = ?`
+			WHERE expires > current_date AND id = ?`
 
-	row, err := m.DB.Query(stmnt, id)
+	err := m.DB.QueryRow(stmnt, id).Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, models.ErrNoRecord
@@ -38,15 +38,8 @@ func (m *SnipModel) Get(id int) (*models.Snip, error) {
 			return nil, err
 		}
 	}
-	s := &models.Snip{}
-
-	err = row.Scan(s.ID, s.Title, s.Content, s.Created, s.Expires)
-	if err != nil {
-		return nil, err
-	}
 	return s, nil
 }
-
 func (m *SnipModel) Latest() ([]*models.Snip, error) {
 	stmt := `SELECT id, title, content,created,expires FROM snippet
 	WHERE expires > CURRENT_TIMESTAMP ORDER BY created DESC LIMIT 10`
@@ -63,7 +56,7 @@ func (m *SnipModel) Latest() ([]*models.Snip, error) {
 		}
 	}(rows)
 
-	var snippets []*models.Snip
+	snippets := []*models.Snip{}
 
 	for rows.Next() {
 		s := &models.Snip{}
