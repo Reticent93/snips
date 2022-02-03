@@ -92,9 +92,9 @@ func (app *application) createSnip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	title := "O wanka"
+	title := "O yokai"
 	content := "O wanka\nClimb Mount Fuji,\nBut slowly, slowly!\n\n– Kobayashi Issa"
-	expires := "14"
+	expires := "14 days"
 
 	id, err := app.snips.Insert(title, content, expires)
 	if err != nil {

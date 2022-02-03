@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/Reticent93/snips/pkg/models"
 	"github.com/uptrace/bun"
+	_ "github.com/uptrace/bun/driver/pgdriver"
 )
 
 type SnipModel struct {
@@ -14,31 +15,22 @@ type SnipModel struct {
 func (m *SnipModel) Insert(title, content, expires string) (int, error) {
 
 	stmt := `INSERT INTO snippet(title, content, created, expires)
-VALUES(?, ?, CURRENT_TIMESTAMP, TIMESTAMP(?, ?)) RETURNING id`
+VALUES(?, ?, CURRENT_TIMESTAMP, CURRENT_DATE + INTERVAL ? DAY) RETURNING id`
 
-	result, err := m.DB.Exec(stmt, title, content, expires)
+	id := 0
+	err := m.DB.QueryRow(stmt, title, content, expires).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-
-	return int(id), nil
-
+	return id, nil
 }
 
 func (m *SnipModel) Get(id int) (*models.Snip, error) {
-	stmt := `SELECT id, title, content, created, expires FROM snippet
-	WHERE expires > CURRENT_TIMESTAMP AND id = ?`
 
-	row := m.DB.QueryRow(stmt, id)
+	stmnt := `SELECT id, title, content, created, expires FROM snippet
+			WHERE expires > current_date + interval AND id = ?`
 
-	s := &models.Snip{}
-
-	err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+	row, err := m.DB.Query(stmnt, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, models.ErrNoRecord
@@ -46,21 +38,13 @@ func (m *SnipModel) Get(id int) (*models.Snip, error) {
 			return nil, err
 		}
 	}
-	return s, nil
+	s := &models.Snip{}
 
-	//	var s = &Snip{}
-	//	err := m.DB.QueryRow(`SELECT title, content, created, expires FROM snippets
-	//WHERE expires > CURRENT_TIMESTAMP`, id).Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
-	//
-	//
-	//	if err != nil {
-	//		if errors.Is(err, sql.ErrNoRows) {
-	//			return nil, ErrNoRecord
-	//		} else {
-	//			return nil, err
-	//		}
-	//	}
-	//	return s, nil
+	err = row.Scan(s.ID, s.Title, s.Content, s.Created, s.Expires)
+	if err != nil {
+		return nil, err
+	}
+	return s, nil
 }
 
 func (m *SnipModel) Latest() ([]*models.Snip, error) {
