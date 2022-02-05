@@ -56,7 +56,7 @@ func (m *SnipModel) Latest() ([]*models.Snip, error) {
 		}
 	}(rows)
 
-	snippets := []*models.Snip{}
+	var snippets []*models.Snip
 
 	for rows.Next() {
 		s := &models.Snip{}

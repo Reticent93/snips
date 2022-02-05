@@ -8,15 +8,17 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
 )
 
 type application struct {
-	errorLog *log.Logger
-	infoLog  *log.Logger
-	snips    *postgres.SnipModel
+	errorLog      *log.Logger
+	infoLog       *log.Logger
+	snips         *postgres.SnipModel
+	templateCache map[string]*template.Template
 }
 
 func main() {
@@ -49,10 +51,16 @@ func main() {
 		}
 	}(db)
 
-	var app = &application{
-		errorLog: errorLog,
-		infoLog:  infoLog,
-		snips:    &postgres.SnipModel{DB: db},
+	templateCache, err := newTemplateCache("./ui/html/")
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+
+	app := &application{
+		errorLog:      errorLog,
+		infoLog:       infoLog,
+		snips:         &postgres.SnipModel{DB: db},
+		templateCache: templateCache,
 	}
 	srv := &http.Server{
 		Addr:     *addr,
@@ -68,14 +76,3 @@ func main() {
 	}
 
 }
-
-//func openDB(dsn string) (*sql.DB, error)  {
-//	db, err := pg.Open("postgres", dsn)
-//	if err != nil {
-//		return nil, err
-//	}
-//	if err = db.Ping(); err != nil {
-//		return nil, err
-//	}
-//	return db, nil
-//}

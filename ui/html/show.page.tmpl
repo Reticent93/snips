@@ -3,16 +3,16 @@
 
 {{define "main"}}
     {{with .Snip}}
-    <div class='snip'>
-        <div class='metadata'>
-            <strong>{{.Snip.Title}}</strong>
-            <span>#{{.Snip.ID}}</span>
+        <div class='snip'>
+            <div class='metadata'>
+                <strong>{{.Snip.Title}}</strong>
+                <span>#{{.Snip.ID}}</span>
+            </div>
+            <pre><code>{{.Snip.Content}}</code></pre>
+            <div class='metadata'>
+                <time>Created: {{.Snip.Created}}</time>
+                <time>Expires: {{.Snip.Expires}}</time>
+            </div>
         </div>
-        <pre><code>{{.Snip.Content}}</code></pre>
-        <div class='metadata'>
-            <time>Created: {{.Snip.Created}}</time>
-            <time>Expires: {{.Snip.Expires}}</time>
-        </div>
-    </div>
-{{end}}
+    {{end}}
 {{end}}

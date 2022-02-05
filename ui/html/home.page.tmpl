@@ -3,7 +3,7 @@
 {{define "title"}}Home{{end}}
 
 {{define "main"}}
-<h2>Latest Snips</h2>
+    <h2>Latest Snips</h2>
     {{if .Snips}}
         <table>
             <tr>
@@ -18,9 +18,9 @@
                     <td>{{.Created}}</td>
                     <td>#{{.ID}}</td>
                 </tr>
-                    {{end}}
+            {{end}}
         </table>
-            {{else}}
-<p>There's nothing to see here yet!</p>
+    {{else}}
+        <p>There's nothing to see here yet!</p>
     {{end}}
 {{end}}
