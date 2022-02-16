@@ -4,18 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Reticent93/snips/pkg/models"
-	"html/template"
-
 	//"html/template"
 	"net/http"
 	"strconv"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		app.notFound(w)
-		return
-	}
 
 	s, err := app.snips.Latest()
 	if err != nil {
@@ -23,31 +17,35 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &templateData{Snips: s}
+	app.render(w, r, "home.page.tmpl", &templateData{
+		Snips: s,
+	})
 
-	files := []string{
-		"./ui/html/home.page.tmpl",
-		"./ui/html/base.layout.tmpl",
-		"./ui/html/footer.partial.tmpl",
-	}
+	//data := &templateData{Snips: s}
+	//
+	//files := []string{
+	//	"./ui/html/home.page.tmpl",
+	//	"./ui/html/base.layout.tmpl",
+	//	"./ui/html/footer.partial.tmpl",
+	//}
 
 	//Parsing the html templates
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		//http.Error(w, "Internal Server Error", 500)
-		return
-	}
+	//ts, err := template.ParseFiles(files...)
+	//if err != nil {
+	//	app.serverError(w, err)
+	//http.Error(w, "Internal Server Error", 500)
+	//return
+	//}
 
 	//Execute method writes content as the response body
-	err = ts.Execute(w, data)
-	if err != nil {
-		app.serverError(w, err)
-	}
+	//err = ts.Execute(w, data)
+	//if err != nil {
+	//	app.serverError(w, err)
+	//}
 }
 
 func (app *application) showSnip(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	id, err := strconv.Atoi(r.URL.Query().Get(":id"))
 	if err != nil || id < 1 {
 		app.notFound(w)
 		return
@@ -63,40 +61,17 @@ func (app *application) showSnip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &templateData{Snip: s}
-
-	files := []string{
-		"./ui/html/show.page.tmpl",
-		"./ui/html/base.layout.tmpl",
-		"./ui/html/footer.partial.tmpl",
-	}
-	//Parse the template files...
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	err = ts.Execute(w, data)
-	if err != nil {
-		app.serverError(w, err)
-	}
-
 	app.render(w, r, "show.page.tmpl", &templateData{
 		Snip: s,
 	})
 
 }
 
+func (app *application) createSnipForm(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Create a new snip..."))
+}
+
 func (app *application) createSnip(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.Header().Set(
-			"Allow",
-			http.MethodPost,
-		)
-		app.clientError(w, http.StatusMethodNotAllowed)
-		return
-	}
 
 	title := "O yokai"
 	content := "O wanka\nClimb Mount Fuji,\nBut slowly, slowly!\n\n– Kobayashi Issa"
@@ -108,5 +83,5 @@ func (app *application) createSnip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/snip?id=%d", id), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/snip/%d", id), http.StatusSeeOther)
 }

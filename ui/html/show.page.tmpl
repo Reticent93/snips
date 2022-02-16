@@ -1,17 +1,19 @@
 {{template "base" .}}
-{{define "title"}}Snips #{{.Snip.ID}}{{end}}
+
+{{define "title"}}Snip #{{.Snip.ID}}{{end}}
 
 {{define "main"}}
     {{with .Snip}}
         <div class='snip'>
             <div class='metadata'>
-                <strong>{{.Snip.Title}}</strong>
-                <span>#{{.Snip.ID}}</span>
+                <strong>{{.Title}}</strong>
+                <span>#{{.ID}}</span>
             </div>
-            <pre><code>{{.Snip.Content}}</code></pre>
+            <pre><code>{{.Content}}</code></pre>
             <div class='metadata'>
-                <time>Created: {{.Snip.Created}}</time>
-                <time>Expires: {{.Snip.Expires}}</time>
+                <!-- Use the new template function here -->
+                <time>Created: {{humanDate .Created }}</time>
+                <time>Expires: {{humanDate .Expires}}</time>
             </div>
         </div>
     {{end}}

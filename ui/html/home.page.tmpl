@@ -14,8 +14,8 @@
             </tr>
             {{range .Snips}}
                 <tr>
-                    <td><a href='/snip?id={{.ID}}'>{{.Title}}</a></td>
-                    <td>{{.Created}}</td>
+                    <td><a href='/snip/{{.ID}}'>{{.Title}}</a></td>
+                    <td>{{.Created | humanDate | printf "Created: %s"}}</td>
                     <td>#{{.ID}}</td>
                 </tr>
             {{end}}

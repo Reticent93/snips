@@ -40,10 +40,6 @@ func main() {
 
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-	//db, err := openDB(*dsn)
-	//if err != nil {
-	//	errorLog.Fatal(err)
-	//}
 	defer func(db *bun.DB) {
 		err := db.Close()
 		if err != nil {
